@@ -1,0 +1,7 @@
+name: PetPlugin
+api-version: 1.16
+version: 0.1
+author: nimble0
+description: Your favorite Pet Plugin
+
+main: de.nimble.PetPlugin
