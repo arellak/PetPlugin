@@ -7,7 +7,9 @@ public class PetPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-
+        loadConfig();
+        loadCommands();
+        registerEvents(getServer().getPluginManager());
     }
 
     @Override
