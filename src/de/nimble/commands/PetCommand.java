@@ -4,7 +4,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
-import de.nimble.pets.nms.PacketData;
+import de.nimble.pets.nms.data.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -34,13 +34,27 @@ public class PetCommand implements CommandExecutor {
 
         Location original = player.getLocation();
 
-        container.getIntegers().write(0, 500);
-        container.getIntegers().write(1, 11);
-        container.getUUIDs().write(0, UUID.randomUUID());
-        container.getDoubles()
+        IntegerData entityId = new IntegerData(0, 500);
+        entityId.write(container);
+        IntegerData entityType = new IntegerData(1, 11);
+        entityType.write(container);
+
+        UUIDData uuid = new UUIDData(0, UUID.randomUUID());
+        uuid.write(container);
+
+        LocationData petLocation = new LocationData(original);
+        petLocation.write(container);
+
+
+        // container.getIntegers().write(0, 500);
+        // container.getIntegers().write(1, 11);
+        // container.getUUIDs().write(0, UUID.randomUUID());
+
+        /*container.getDoubles()
                 .write(0, original.getX())
                 .write(1, original.getY())
                 .write(2, original.getZ());
+         */
 
         Bukkit.getServer().getScheduler().runTaskTimer(plugin, task -> {
             Location location = original.clone().setDirection(player.getLocation().subtract(original.clone()).toVector());
@@ -49,10 +63,19 @@ public class PetCommand implements CommandExecutor {
 
             PacketContainer headRotation = new PacketContainer(PacketType.Play.Server.ENTITY_HEAD_ROTATION);
 
-            headRotation.getIntegers()
+            entityId.write(headRotation);
+
+            /* headRotation.getIntegers()
                             .write(0, 500);
-            headRotation.getBytes()
+             */
+
+            ByteData yawData = new ByteData(0, yaw);
+            yawData.write(headRotation);
+
+            /*
+                headRotation.getBytes()
                     .write(0, yaw);
+             */
 
             try {
                  manager.sendServerPacket(player, headRotation);
@@ -61,12 +84,23 @@ public class PetCommand implements CommandExecutor {
             }
 
             PacketContainer entityLook = new PacketContainer(PacketType.Play.Server.ENTITY_LOOK);
-            entityLook.getIntegers().write(0, 500);
-            entityLook.getBytes()
+            entityId.write(entityLook);
+
+            // entityLook.getIntegers().write(0, 500);
+            yawData.write(entityLook);
+            ByteData pitchData = new ByteData(1, pitch);
+            pitchData.write(entityLook);
+
+            BooleanData bData = new BooleanData(0, false);
+            bData.write(entityLook);
+
+            /*entityLook.getBytes()
                     .write(0, yaw)
                     .write(1, pitch);
+
             entityLook.getBooleans()
                     .write(0, false);
+             */
             try {
                 manager.sendServerPacket(player, entityLook);
             } catch (InvocationTargetException e) {
